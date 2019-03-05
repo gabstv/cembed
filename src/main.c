@@ -7,20 +7,25 @@ typedef struct {
     int files_n;
     int files_cap;
     char * output;
-} parsedargs;
+} args_t;
 
-void freepargs(parsedargs * v) {
+void free_args(args_t * v) {
     free(v->files);
     free(v);
 }
 
-void help() {
-    //TODO: print help
-    printf("TODO: print help\n");
+void print_usage(const char * progname) {
+    printf("usage: %s $FILE\t| put contents of $FILE into $FILE.h\n", progname);
+    printf("       %s -o embedded.h $FILE\t| put contents of $FILE into embedded.h\n", progname);
+    printf("       %s -o embedded.h $FILE1 $FILE2\t| put contents of $FILE1 and $FILE2 into embedded.h\n", progname);
 }
 
-char * normalizefn(const char * inputn, const char * suffix) {
-    printf("normalizefn\n");
+void help(const char * progname) {
+    printf("cembed is a tool to embed file contents into a c header file.\n\n");
+    print_usage(progname);
+}
+
+char * safe_var_name(const char * inputn, const char * suffix) {
     char * outp = (char *)malloc(strlen(inputn)+sizeof(char)*5);
     for(int i = 0; inputn[i] != '\0'; i++){
         if(inputn[i] >= '0' && inputn[i] <= '9'){
@@ -41,24 +46,25 @@ char * normalizefn(const char * inputn, const char * suffix) {
         }
         outp[i] = '_';
     }
-    strcat(outp, suffix);
-    printf("normalizefn 2\n");
+    if(suffix != NULL){
+        strcat(outp, suffix);
+    }
     return outp;
 }
 
-char parse(int argc, char *argv[], parsedargs * result) {
+char parse(int argc, char *argv[], args_t * result) {
     result->files = NULL;
     result->output = NULL;
     if(argc < 2){
-        printf("usage %s file\n", argv[0]);
+        print_usage(argv[0]);
         return 1;
     }
     if(strcmp(argv[1], "--help") == 0){
-        help();
+        help(argv[0]);
         return 2;
     }
     for(int i = 1; i < argc; i++){
-        if(strcmp(argv[i], "-o") == 0){
+        if(strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0){
             // needs next arg
             if(argc<=i+1){
                 // error
@@ -85,13 +91,13 @@ char parse(int argc, char *argv[], parsedargs * result) {
     }
     // set a file output if none is specified
     if(result->output == NULL){
-        result->output = normalizefn(result->files[0], ".h");
+        result->output = safe_var_name(result->files[0], ".h");
     }
     return 0;
 }
 
 int main(int argc, char *argv[]) {
-    parsedargs * pargs = (parsedargs *)malloc(sizeof(parsedargs));
+    args_t * pargs = (args_t *)malloc(sizeof(args_t));
     int z = parse(argc, argv, pargs);
     if(z == 2){
         // is help
@@ -122,10 +128,10 @@ int main(int argc, char *argv[]) {
             fclose(f);
             remove(pargs->output);
             printf("could not open %s\n", pargs->files[i]);
-            freepargs(pargs);
+            free_args(pargs);
             return 1;
         }
-        fprintf(f, "static char %s[] = {", normalizefn(pargs->files[i], "_z"));
+        fprintf(f, "static const char %s[] = {", safe_var_name(pargs->files[i], NULL));
         int first = 1;
         while(1){
             int nr = fread(buffer, 1, 1024, rf);
