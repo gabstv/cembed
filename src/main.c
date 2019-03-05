@@ -15,8 +15,8 @@ void free_args(args_t * v) {
 }
 
 void print_usage(const char * progname) {
-    printf("usage: %s $FILE\t| put contents of $FILE into $FILE.h\n", progname);
-    printf("       %s -o embedded.h $FILE\t| put contents of $FILE into embedded.h\n", progname);
+    printf("usage: %s $FILE                      \t| put contents of $FILE into $FILE.h\n", progname);
+    printf("       %s -o embedded.h $FILE        \t| put contents of $FILE into embedded.h\n", progname);
     printf("       %s -o embedded.h $FILE1 $FILE2\t| put contents of $FILE1 and $FILE2 into embedded.h\n", progname);
 }
 
@@ -111,12 +111,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     // build output file
-    printf("build output\n");
     FILE *f;
     f = fopen(pargs->output, "w");
-    printf("will write file '%s'\n", pargs->output);
     fprintf(f, "// AUTO GENERATED FILE\n");
-    printf("will write l2\n");
+    fprintf(f, "// cembed - https://github.com/gabstv/cembed\n");
     fprintf(f, "\n");
     fprintf(f, "#pragma once\n\n");
     // loop through all
@@ -157,7 +155,6 @@ int main(int argc, char *argv[]) {
         fclose(rf);
     }
     fclose(f);
-    printf("will free file\n");
     f = NULL;
 
     return 0;
