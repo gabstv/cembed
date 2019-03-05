@@ -8,12 +8,10 @@
             "type": "shell",
             "command": "cc",
             "args": [
-                //"`pkg-config", "--cflags", "gtk+-3.0`",
                 "-v",
                 "-o",
                 "../bin/cembed",
-                "main.c"//,
-                //"`pkg-config", "--libs", "gtk+-3.0`"
+                "main.c"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"
@@ -22,6 +20,20 @@
             "problemMatcher": [
                 "$gcc"
             ]
+        },
+        {
+            "label": "install",
+            "type": "shell",
+            "command": "mv",
+            "args": [
+                "cembed",
+                "/usr/local/bin/cembed"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/bin"
+            },
+            "group": "none",
+            "problemMatcher": []
         }
     ]
 }
