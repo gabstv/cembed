@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "cc",
+            "args": [
+                //"`pkg-config", "--cflags", "gtk+-3.0`",
+                "-v",
+                "-o",
+                "../bin/cembed",
+                "main.c"//,
+                //"`pkg-config", "--libs", "gtk+-3.0`"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
